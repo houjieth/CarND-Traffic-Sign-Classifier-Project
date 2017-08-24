@@ -1,0 +1,392 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   Made with Remarkable!
+  </title>
+  <link href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/styles/github.min.css" rel="stylesheet"/>
+  <style type="text/css">
+   body,table tr{background-color:#fff}table tr td,table tr th{border:1px solid #ccc;text-align:left;padding:6px 13px;margin:0}pre code,table,table tr{padding:0}hr,pre code{background:0 0}body{font:16px Helvetica,Arial,sans-serif;line-height:1.4;color:#333;word-wrap:break-word;padding:10px 15px}strong,table tr th{font-weight:700}h1{font-size:2em;margin:.67em 0;text-align:center}h2{font-size:1.75em}h3{font-size:1.5em}h4{font-size:1.25em}h1,h2,h3,h4,h5,h6{font-weight:700;position:relative;margin-top:15px;margin-bottom:15px;line-height:1.1}h1,h2{border-bottom:1px solid #eee}hr{height:0;margin:15px 0;overflow:hidden;border:0;border-bottom:1px solid #ddd}a{color:#4183C4}a.absent{color:#c00}ol,ul{padding-left:15px;margin-left:5px}ol{list-style-type:lower-roman}table tr{border-top:1px solid #ccc;margin:0}table tr:nth-child(2n){background-color:#aaa}table tr td :first-child,table tr th :first-child{margin-top:0}table tr td:last-child,table tr th :last-child{margin-bottom:0}img{max-width:100%}blockquote{padding:0 15px;border-left:4px solid #ccc}code,tt{margin:0 2px;padding:0 5px;white-space:nowrap;border:1px solid #eaeaea;background-color:#f8f8f8;border-radius:3px}pre code{margin:0;white-space:pre;border:none}.highlight pre,pre{background-color:#f8f8f8;border:1px solid #ccc;font-size:13px;line-height:19px;overflow:auto;padding:6px 10px;border-radius:3px}
+  </style>
+ </head>
+ <body>
+  <h1 id="traffic-sign-recognition">
+   <strong>
+    Traffic Sign Recognition
+   </strong>
+  </h1>
+  <h3 id="data-set-summary-exploration">
+   Data Set Summary &amp; Exploration
+  </h3>
+  <h4 id="1-provide-a-basic-summary-of-the-data-set-in-the-code-the-analysis-should-be-done-using-python-numpy-andor-pandas-methods-rather-than-hardcoding-results-manually">
+   1. Provide a basic summary of the data set. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
+  </h4>
+  <p>
+   I used the pandas library to calculate summary statistics of the traffic signs data set:
+  </p>
+  <ul>
+   <li>
+    The size of training set is 34799
+   </li>
+   <li>
+    The size of the validation set is 4410
+   </li>
+   <li>
+    The size of test set is 12630
+   </li>
+   <li>
+    The shape of a traffic sign image is (32, 32, 3)
+   </li>
+   <li>
+    The number of unique classes/labels in the data set is 43
+   </li>
+  </ul>
+  <h4 id="2-include-an-exploratory-visualization-of-the-dataset">
+   2. Include an exploratory visualization of the dataset.
+  </h4>
+  <p>
+   Here’s a bar chart showing the distribution of different class of traffic signs from the training data. The x-axis shows the traffic sign type index, and the y-axis shows the count of training images for that class.
+  </p>
+  <p>
+   We can see that it’s not distributed evenly. Some traffic signs appear much more often than others in this training data set.
+  </p>
+  <p>
+   <img alt="alt text" src="./images/1.png"/>
+  </p>
+  <h3 id="design-and-test-a-model-architecture">
+   Design and Test a Model Architecture
+  </h3>
+  <h4 id="1-describe-how-you-preprocessed-the-image-data-what-techniques-were-chosen-and-why-did-you-choose-these-techniques-consider-including-images-showing-the-output-of-each-preprocessing-technique-pre-processing-refers-to-techniques-such-as-converting-to-grayscale-normalization-etc-optional-as-described-in-the-stand-out-suggestions-part-of-the-rubric-if-you-generated-additional-data-for-training-describe-why-you-decided-to-generate-additional-data-how-you-generated-the-data-and-provide-example-images-of-the-additional-data-then-describe-the-characteristics-of-the-augmented-training-set-like-number-of-images-in-the-set-number-of-images-for-each-class-etc">
+   1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the “Stand Out Suggestions” part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
+  </h4>
+  <p>
+   I did two steps for preprocessing the images.
+  </p>
+  <p>
+   First I turn image into grayscale. Color is not that useful (compared with shape or contrast) when identifying traffic sign. Converting from RGB color to grayscale greatly reduces the data size and makes our training more efficient.
+  </p>
+  <p>
+   <img alt="alt text" src="./images/2.png"/>
+   <br/>
+   <img alt="alt text" src="./images/3.png"/>
+  </p>
+  <p>
+   Then I normalize the picture. We learned that putting all input data within the range of (-1,1) with a mean of 0 will makes our training more efficient.
+  </p>
+  <h4 id="2-describe-what-your-final-model-architecture-looks-like-including-model-type-layers-layer-sizes-connectivity-etc-consider-including-a-diagram-andor-table-describing-the-final-model">
+   2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
+  </h4>
+  <p>
+   My final model consisted of the following layers:
+  </p>
+  <ul>
+   <li>
+    Layer1: input 32x32x1, 5x5 convolution with stride (1,1), 10 output channels, then relu, then 2x2 maxpool, final output 14x14x10
+   </li>
+   <li>
+    Layer2: input 14x14x10, 5x5 convolution with stride (1,1), 50 output channels, then relu, then 2x2 maxpool, then flatten, final output 1250
+   </li>
+   <li>
+    Layer3: input 1250, fully connected to 500, then relu, output 500
+   </li>
+   <li>
+    Layer4: input 500, fully connected to 200, then relu, output 200
+   </li>
+   <li>
+    Layer5: input 200, fully connected to 43, output 43
+   </li>
+  </ul>
+  <h4 id="3-describe-how-you-trained-your-model-the-discussion-can-include-the-type-of-optimizer-the-batch-size-number-of-epochs-and-any-hyperparameters-such-as-learning-rate">
+   3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
+  </h4>
+  <p>
+   Here’s the component that I prepared for training the model:
+   <br/>
+   - Cost function: use softmax cross entropy between onehot encodeded prediction and label
+   <br/>
+   - Optimizer: Use AdamOptimizer
+   <br/>
+   - Batch size: 128
+   <br/>
+   - Number of epochs: 30
+   <br/>
+   - Learning rate: 0.0005
+  </p>
+  <h4 id="4-describe-the-approach-taken-for-finding-a-solution-and-getting-the-validation-set-accuracy-to-be-at-least-093-include-in-the-discussion-the-results-on-the-training-validation-and-test-sets-and-where-in-the-code-these-were-calculated-your-approach-may-have-been-an-iterative-process-in-which-case-outline-the-steps-you-took-to-get-to-the-final-solution-and-why-you-chose-those-steps-perhaps-your-solution-involved-an-already-well-known-implementation-or-architecture-in-this-case-discuss-why-you-think-the-architecture-is-suitable-for-the-current-problem">
+   4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
+  </h4>
+  <p>
+   My final model results were:
+  </p>
+  <ul>
+   <li>
+    <p>
+     training set accuracy of 1.000
+    </p>
+   </li>
+   <li>
+    <p>
+     validation set accuracy of 0.926
+    </p>
+   </li>
+   <li>
+    <p>
+     test set accuracy of 0.928
+    </p>
+   </li>
+  </ul>
+  <p>
+   If an iterative approach was chosen:
+  </p>
+  <ul>
+   <li>
+    What was the first architecture that was tried and why was it chosen?
+   </li>
+  </ul>
+  <p>
+   In the begining, my choice of architecture was very similar to the final one, except that the output channels and fully connected nodes are much much smaller, like 5~10x smaller.
+  </p>
+  <ul>
+   <li>
+    What were some problems with the initial architecture?
+   </li>
+  </ul>
+  <p>
+   I found that my training and validation accuracy couldn’t raise more than 85%. I tried with different number of batch size, number of epochs, and learning rate, none of that really helped.
+  </p>
+  <ul>
+   <li>
+    How was the architecture adjusted and why was it adjusted? Typical adjustments could include choosing a different model architecture, adding or taking away layers (pooling, dropout, convolution, etc), using an activation function or changing the activation function. One common justification for adjusting an architecture would be due to overfitting or underfitting. A high accuracy on the training set but low accuracy on the validation set indicates over fitting; a low accuracy on both sets indicates under fitting.
+   </li>
+  </ul>
+  <p>
+   I thought my model might not be complicated enough, thus it might be under fitting. So I increase the size of the convolution output, so is the fully connected layer size. But it was not very easy to find a good number. When I set the network size to be too big, the validation accuracy actually decreases. After several trial, I tried to lower the learning rate from 0.001 to 0.0005, and it does increase the validation accuracy and the accuracy over later epochs are much more stable.
+  </p>
+  <ul>
+   <li>
+    Which parameters were tuned? How were they adjusted and why?
+   </li>
+  </ul>
+  <p>
+   Batch size and number of epochs. The latter was easier to tune because a higher number of epochs combined with moderate learning rate will certainlly always makes the result better. Batch size is a bit weird and I don’t fully understand how it affected the result. I tried to make it bigger or smaller and finally set it to 128.
+  </p>
+  <ul>
+   <li>
+    What are some of the important design choices and why were they chosen? For example, why might a convolution layer work well with this problem? How might a dropout layer help with creating a successful model?
+   </li>
+  </ul>
+  <p>
+   Convolution is certainly helpful because the traffic sign is a typical example of pixel patterns being features. Convolution combines low-level features (pixels) into higher-level features (patterns) and these higher-level features are bascially able to match the traffic sign’s design.
+  </p>
+  <p>
+   I didn’t use dropout layer. I tried to add it but unfortunately I didn’t find it generates much difference for my case.
+  </p>
+  <p>
+   If a well known architecture was chosen:
+  </p>
+  <ul>
+   <li>
+    What architecture was chosen?
+   </li>
+  </ul>
+  <p>
+   I chose the well-known LeNet architecture.
+  </p>
+  <ul>
+   <li>
+    Why did you believe it would be relevant to the traffic sign application?
+   </li>
+  </ul>
+  <p>
+   LeNet was designed to recognize written numbers. I think traffic sign has a lot of similarities when compared with written numbers because both features= line patterns (curve, straight line, dots) and none of then features colors or lighting conditions.
+  </p>
+  <ul>
+   <li>
+    How does the final model’s accuracy on the training, validation and test set provide evidence that the model is working well?
+   </li>
+  </ul>
+  <p>
+   The training accuracy is 100%, and the validation and test accuracy are around 93%. I think the result looks good. It might be a little overfitted, but overall still generalizes well.
+  </p>
+  <h3 id="test-a-model-on-new-images">
+   Test a Model on New Images
+  </h3>
+  <h4 id="1-choose-five-german-traffic-signs-found-on-the-web-and-provide-them-in-the-report-for-each-image-discuss-what-quality-or-qualities-might-be-difficult-to-classify">
+   1. Choose five German traffic signs found on the web and provide them in the report. For each image, discuss what quality or qualities might be difficult to classify.
+  </h4>
+  <p>
+   Here are five German traffic signs that I found on the web:
+  </p>
+  <p>
+   <img alt="alt text" src="./images/t1.png"/>
+   <img alt="alt text" src="./images/t2.png"/>
+   <img alt="alt text" src="./images/t3.png"/>
+   <br/>
+   <img alt="alt text" src="./images/t4.png"/>
+   <img alt="alt text" src="./images/t5.png"/>
+  </p>
+  <p>
+   The first image might be difficult to classify because …
+  </p>
+  <h4 id="2-discuss-the-models-predictions-on-these-new-traffic-signs-and-compare-the-results-to-predicting-on-the-test-set-at-a-minimum-discuss-what-the-predictions-were-the-accuracy-on-these-new-predictions-and-compare-the-accuracy-to-the-accuracy-on-the-test-set-optional-discuss-the-results-in-more-detail-as-described-in-the-stand-out-suggestions-part-of-the-rubric">
+   2. Discuss the model’s predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the “Stand Out Suggestions” part of the rubric).
+  </h4>
+  <p>
+   Here are the results of the prediction:
+  </p>
+  <table>
+   <thead>
+    <tr>
+     <th align="center">
+      Image
+     </th>
+     <th align="center">
+      Prediction
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td align="center">
+      Speed limit (120km/h)
+     </td>
+     <td align="center">
+      Speed limt (120km/h)
+     </td>
+    </tr>
+    <tr>
+     <td align="center">
+      Yield
+     </td>
+     <td align="center">
+      Yield
+     </td>
+    </tr>
+    <tr>
+     <td align="center">
+      Road work
+     </td>
+     <td align="center">
+      Road work
+     </td>
+    </tr>
+    <tr>
+     <td align="center">
+      Bicycles crossing
+     </td>
+     <td align="center">
+      Bicycles crossing
+     </td>
+    </tr>
+    <tr>
+     <td align="center">
+      End of no passing
+     </td>
+     <td align="center">
+      End of no passing
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <p>
+   The model was able to correctly guess 5 of the 5 traffic signs, which gives an accuracy of 100%. This is even better than the test accuracy in previous training process.
+  </p>
+  <h4 id="3-describe-how-certain-the-model-is-when-predicting-on-each-of-the-five-new-images-by-looking-at-the-softmax-probabilities-for-each-prediction-provide-the-top-5-softmax-probabilities-for-each-image-along-with-the-sign-type-of-each-probability-optional-as-described-in-the-stand-out-suggestions-part-of-the-rubric-visualizations-can-also-be-provided-such-as-bar-charts">
+   3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the “Stand Out Suggestions” part of the rubric, visualizations can also be provided such as bar charts)
+  </h4>
+  <ul>
+   <li>
+    <p>
+     First image: Speed limit (120km/h). The prediction results with probabilities:
+     <br/>
+     class: 8, probability: 1.0, signname: Speed limit (120km/h)
+     <br/>
+     class: 7, probability: 3.873366904993958e-11, signname: Speed limit (100km/h)
+     <br/>
+     class: 40, probability: 6.261631431457929e-14, signname: Roundabout mandatory
+     <br/>
+     class: 0, probability: 5.136434261929679e-17, signname: Speed limit (20km/h)
+     <br/>
+     class: 14, probability: 2.312363239864558e-19, signname: Stop
+    </p>
+   </li>
+   <li>
+    <p>
+     Second image: Yield. The prediction results with probabilities:
+     <br/>
+     class: 13, probability: 1.0, signname: Yield
+     <br/>
+     class: 35, probability: 1.638729776876069e-11, signname: Ahead only
+     <br/>
+     class: 1, probability: 1.946183266025373e-16, signname: Speed limit (30km/h)
+     <br/>
+     class: 15, probability: 7.69797505273448e-17, signname: No vehicles
+     <br/>
+     class: 9, probability: 6.696285800712366e-17, signname: No passing
+    </p>
+   </li>
+   <li>
+    <p>
+     Third image: Road work. The prediction results with probabilities:
+     <br/>
+     class: 25, probability: 1.0, signname: Road work
+     <br/>
+     class: 19, probability: 1.1825431211782023e-15, signname: Dangerous curve to the left
+     <br/>
+     class: 22, probability: 1.6098153653632577e-16, signname: Bumpy road
+     <br/>
+     class: 29, probability: 1.6576936049217865e-17, signname: Bicycles crossing
+     <br/>
+     class: 23, probability: 3.4634509781871587e-19, signname: Slippery road
+    </p>
+   </li>
+   <li>
+    <p>
+     Forth image: Bicycles crossing. The prediction results with probabilities:
+     <br/>
+     class: 29, probability: 1.0, signname: Bicycles crossing
+     <br/>
+     class: 28, probability: 3.4673536264406835e-10, signname: Children crossing
+     <br/>
+     class: 24, probability: 4.831855943999985e-13, signname: Road narrows on the right
+     <br/>
+     class: 22, probability: 1.8851250855461688e-13, signname: Bumpy road
+     <br/>
+     class: 35, probability: 1.779948428503198e-14, signname: Ahead only
+    </p>
+   </li>
+   <li>
+    <p>
+     Fifth image: End of no passing. The prediction results with probabilities:
+     <br/>
+     class: 41, probability: 1.0, signname: End of no passing
+     <br/>
+     class: 42, probability: 5.07171145358587e-11, signname: End of no passing by vehicles over 3.5 metric …
+     <br/>
+     class: 32, probability: 8.970013967712909e-12, signname: End of all speed and passing limits
+     <br/>
+     class: 6, probability: 2.978466811295183e-13, signname: End of speed limit (80km/h)
+     <br/>
+     class: 12, probability: 1.3348034344360304e-15, signname: Priority road
+    </p>
+   </li>
+  </ul>
+  <h3 id="optional-visualizing-the-neural-network-see-step-4-of-the-ipython-notebook-for-more-details">
+   (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
+  </h3>
+  <h4 id="1-discuss-the-visual-output-of-your-trained-networks-feature-maps-what-characteristics-did-the-neural-network-use-to-make-classifications">
+   1. Discuss the visual output of your trained network’s feature maps. What characteristics did the neural network use to make classifications?
+  </h4>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/highlight.min.js">
+  </script>
+  <script>
+   hljs.initHighlightingOnLoad();
+  </script>
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript">
+  </script>
+  <script type="text/javascript">
+   MathJax.Hub.Config({"showProcessingMessages" : false,"messageStyle" : "none","tex2jax": { inlineMath: [ [ "$", "$" ] ] }});
+  </script>
+ </body>
+</html>
